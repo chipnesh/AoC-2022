@@ -1,47 +1,65 @@
 fun main() {
 
-    var i = 1
-    val lowerItems = ('a'..'z').associateWith { i++ }
-    val upperItems = ('A'..'Z').associateWith { i++ }
-    val items = lowerItems + upperItems
-
-    fun String.halfSplit(): Pair<Set<Char>, Set<Char>> {
-        val array = this.toCharArray()
-        val half = length / 2
-        return substring(0 until half).toSet() to substring(half until length).toSet()
-    }
-
-    fun commonItem(pair: Pair<Set<Char>, Set<Char>>): Char {
-        return pair.first.intersect(pair.second).single()
-    }
-
-    fun commonItems(first: Set<Char>, second: Set<Char>): Set<Char> {
-        return first.intersect(second)
-    }
-
     fun part1(input: List<String>): Int {
-        return input
-            .map(String::halfSplit)
-            .map(::commonItem)
-            .mapNotNull(items::get)
-            .sum()
+        return input.sumOf { Rucksack(it).duplicates().priority ?: 0 }
     }
 
     fun part2(input: List<String>): Int {
         return input
             .chunked(3)
-            .map { group ->
+            .mapNotNull { group ->
                 group
-                    .map(String::toSet)
-                    .reduce(::commonItems)
+                    .map(::Rucksack)
+                    .reduce(Rucksack::duplicates)
                     .single()
-            }
-            .mapNotNull(items::get)
-            .sum()
+                    ?.priority
+            }.sum()
     }
 
-    //val input = readInput("Day03_test")
-    val input = readInput("Day03")
+    val input = readInput("Day03_test")
+    //val input = readInput("Day03")
     println(part1(input))
     println(part2(input))
+}
+
+@JvmInline
+value class Item(private val value: Char) {
+    val priority: Int? get() = priorities[value]
+
+    companion object {
+        val priorities = (('a'..'z') + ('A'..'Z'))
+            .withIndex()
+            .associate { it.value to it.index + 1 }
+    }
+}
+
+@JvmInline
+value class Compartment(private val value: String) {
+    fun duplicates(other: Compartment): Item {
+        val otherSet = other.value.toSet()
+        return value.first { it in otherSet }.let(::Item)
+    }
+}
+
+@JvmInline
+value class Rucksack(private val value: String) {
+
+    private val left get() = Compartment(value.substring(0 until value.length / 2))
+    private val right get() = Compartment(value.substring(value.length / 2, value.length))
+
+    fun duplicates() = left.duplicates(right)
+
+    fun duplicates(other: Rucksack): Rucksack {
+        val otherSet = other.value.toSet()
+        return value
+            .mapNotNullTo(mutableSetOf()) { item -> if (item in otherSet) item else null }
+            .toCharArray()
+            .concatToString()
+            .let(::Rucksack)
+    }
+
+    fun single() =
+        value
+            .singleOrNull()
+            ?.let(::Item)
 }

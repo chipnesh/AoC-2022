@@ -1,24 +1,26 @@
 fun main() {
-    fun elfCalories(input: List<String>): MutableMap<Int, MutableList<Int>> {
-        var idx = 1
-        return input.fold(mutableMapOf()) { acc, calories ->
-            if (calories.isBlank()) {
-                idx++
-            } else {
-                acc.getOrPut(idx, ::mutableListOf).add(calories.toInt())
+
+    fun splitByCondition(input: List<String>, condition: (String) -> Boolean): List<Int> {
+        val elements = mutableListOf<Int>()
+        return input.fold(mutableListOf<Int>()) { acc, calories ->
+            acc.apply {
+                if (condition(calories)) {
+                    add(elements.sum())
+                    elements.clear()
+                } else {
+                    elements.add(calories.toInt())
+                }
             }
-            acc
-        }
+        } + elements.sum()
     }
 
     fun part1(input: List<String>): Int {
-        val caloriesPerElf = elfCalories(input)
-        return caloriesPerElf.values.maxOfOrNull { it.sum() } ?: -1
+        val caloriesPerElf = splitByCondition(input, String::isBlank)
+        return caloriesPerElf.maxOrNull() ?: -1
     }
 
     fun part2(input: List<String>): Int {
-        val caloriesPerElf = elfCalories(input)
-        val caloriesSums = caloriesPerElf.mapValues { it.value.sum() }.values
+        val caloriesSums = splitByCondition(input, String::isBlank)
         return caloriesSums.sortedDescending().take(3).sum()
     }
 
