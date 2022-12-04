@@ -22,6 +22,7 @@ fun main() {
         return caloriesSums.sortedDescending().take(3).sum()
     }
 
+    //val input = readInput("Day01_test")
     val input = readInput("Day01")
     println(part1(input))
     println(part2(input))
