@@ -29,15 +29,15 @@ value class RangePair(private val value: String) {
 @JvmInline
 value class Range(private val value: String) {
 
-    operator fun component1() = value.substringBefore("-").toInt()
-    operator fun component2() = value.substringAfter("-").toInt()
+    val start get() = value.substringBefore("-").toInt()
+    val end get() = value.substringAfter("-").toInt()
 
     operator fun contains(value: Int) =
-        value in component1()..component2()
+        value in start..end
 
     operator fun contains(other: Range) =
-        component1() in other && component2() in other
+        start in other && end in other
 
     infix fun intersect(other: Range) =
-        component1() in other || component2() in other
+        start in other || end in other
 }

@@ -49,9 +49,9 @@ enum class Figure(private val score: Int) {
 
     fun fightClassic(other: Figure): Result {
         return when (this) {
-            other -> DRAW(score)
+            other.beatenBy -> WIN(score)
             other.beats -> LOOSE(score)
-            else -> WIN(score)
+            else -> DRAW(score)
         }
     }
 

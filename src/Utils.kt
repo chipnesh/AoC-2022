@@ -20,3 +20,17 @@ fun String.md5() =
 fun readInts(name: String) =
     readInput(name)
         .map(String::toInt)
+
+fun splitByCondition(input: List<String>, condition: (String) -> Boolean): List<Int> {
+    val elements = mutableListOf<Int>()
+    return input.fold(mutableListOf<Int>()) { acc, calories ->
+        acc.apply {
+            if (condition(calories)) {
+                add(elements.sum())
+                elements.clear()
+            } else {
+                elements.add(calories.toInt())
+            }
+        }
+    } + elements.sum()
+}
