@@ -4,21 +4,32 @@ import readInput
 
 fun main() {
 
-    fun part1(input: List<String>): Int {
-        return input
+    fun String.noDuplicates(): Boolean {
+        val duplicates = IntArray(255)
+        for (i in indices) {
+            duplicates[get(i).code]++
+            if (duplicates[get(i).code] > 1) {
+                return false
+            }
+        }
+        return true
+    }
+
+    fun firstOccurrence(input: List<String>, packetLength: Int) =
+        input
             .first()
-            .windowed(4)
-            .withIndex()
-            .firstNotNullOf { (i, data) -> data.toSet().size.takeIf { it == 4 }?.plus(i) }
+            .windowedSequence(packetLength)
+            .mapIndexedNotNull { i, s -> s.takeIf(String::noDuplicates)?.run { length + i } }
+            .first()
+
+    fun part1(input: List<String>): Int {
+        return firstOccurrence(input, 4)
     }
 
     fun part2(input: List<String>): Int {
-        return input
-            .first()
-            .windowed(14)
-            .takeWhile { it.toSet().size != 14 }
-            .count() + 14
+        return firstOccurrence(input, 14)
     }
+
 
     //val input = readInput("test")
     val input = readInput("prod")
