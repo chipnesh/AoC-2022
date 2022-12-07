@@ -1,19 +1,9 @@
 package day6
 
+import noDuplicates
 import readInput
 
 fun main() {
-
-    fun String.noDuplicates(): Boolean {
-        val duplicates = IntArray(255)
-        for (i in indices) {
-            duplicates[get(i).code]++
-            if (duplicates[get(i).code] > 1) {
-                return false
-            }
-        }
-        return true
-    }
 
     fun firstOccurrence(input: List<String>, packetLength: Int) =
         input

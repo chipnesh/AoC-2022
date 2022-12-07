@@ -19,16 +19,29 @@ fun String.md5() =
         .toString(16)
         .padStart(32, '0')
 
-fun splitByCondition(input: List<String>, condition: (String) -> Boolean): List<Int> {
+fun List<String>.sumBySplitting(condition: (String) -> Boolean): List<Int> {
     val elements = mutableListOf<Int>()
-    return input.fold(mutableListOf<Int>()) { acc, calories ->
+    return fold(mutableListOf<Int>()) { acc, element ->
         acc.apply {
-            if (condition(calories)) {
+            if (condition(element)) {
                 add(elements.sum())
                 elements.clear()
             } else {
-                elements.add(calories.toInt())
+                elements.add(element.toInt())
             }
         }
     } + elements.sum()
 }
+
+fun String.hasDuplicates(): Boolean {
+    val duplicates = IntArray(255)
+    for (i in indices) {
+        duplicates[get(i).code]++
+        if (duplicates[get(i).code] > 1) {
+            return true
+        }
+    }
+    return false
+}
+
+fun String.noDuplicates() = !hasDuplicates()

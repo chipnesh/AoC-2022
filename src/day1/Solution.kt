@@ -1,17 +1,17 @@
 package day1
 
 import readInput
-import splitByCondition
+import sumBySplitting
 
 fun main() {
 
     fun part1(input: List<String>): Int {
-        val caloriesPerElf = splitByCondition(input, String::isBlank)
+        val caloriesPerElf = input.sumBySplitting(String::isBlank)
         return caloriesPerElf.maxOrNull() ?: -1
     }
 
     fun part2(input: List<String>): Int {
-        val caloriesSums = splitByCondition(input, String::isBlank)
+        val caloriesSums = input.sumBySplitting(String::isBlank)
         return caloriesSums.sortedDescending().take(3).sum()
     }
 
