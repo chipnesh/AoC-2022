@@ -1,3 +1,7 @@
+package day5
+
+import readInput
+
 fun main() {
 
     fun part1(input: List<String>): String {
@@ -18,8 +22,8 @@ fun main() {
         return crates.top()
     }
 
-    //val input = readInput("Day05_test")
-    val input = readInput("Day05")
+    //val input = readInput("test")
+    val input = readInput("prod")
     println(part1(input))
     println(part2(input))
 }
@@ -89,7 +93,7 @@ value class Instructions(private val instructions: List<Instruction>) {
     companion object {
         fun ofList(lines: List<String>): Instructions {
             return lines
-                .map(Instruction::of)
+                .map(Instruction.Companion::of)
                 .let(::Instructions)
         }
     }

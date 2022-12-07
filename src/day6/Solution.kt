@@ -1,3 +1,7 @@
+package day6
+
+import readInput
+
 fun main() {
 
     fun part1(input: List<String>): Int {
@@ -16,8 +20,8 @@ fun main() {
             .count() + 14
     }
 
-    //val input = readInput("Day06_test")
-    val input = readInput("Day06")
+    //val input = readInput("test")
+    val input = readInput("prod")
     println(part1(input))
     println(part2(input))
 }

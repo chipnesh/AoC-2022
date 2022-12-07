@@ -1,6 +1,9 @@
-import Result.DRAW
-import Result.LOOSE
-import Result.WIN
+package day2
+
+import day2.Result.DRAW
+import day2.Result.LOOSE
+import day2.Result.WIN
+import readInput
 
 fun main() {
 
@@ -18,8 +21,8 @@ fun main() {
         }
     }
 
-    //val input = readInput("Day02_test")
-    val input = readInput("Day02")
+    //val input = readInput("test")
+    val input = readInput("prod")
     println(part1(input))
     println(part2(input))
 }

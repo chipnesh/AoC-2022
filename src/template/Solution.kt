@@ -1,5 +1,8 @@
-fun main() {
+package template
 
+import readInput
+
+fun main() {
     fun part1(input: List<String>): Int {
         return -1
     }
@@ -8,8 +11,8 @@ fun main() {
         return -1
     }
 
-    val input = readInput("Day07_test")
-    //val input = readInput("Day07")
+    val input = readInput("test")
+    //val input = readInput("prod")
     println(part1(input))
     println(part2(input))
 }
