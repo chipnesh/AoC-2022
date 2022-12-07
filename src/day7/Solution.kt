@@ -8,6 +8,7 @@ import day7.CMDLine.Command.CD.To
 import day7.CMDLine.Command.LS
 import day7.CMDLine.Output
 import day7.CMDLine.Output.DIR
+import day7.CMDLine.Output.FileInfo
 import readInput
 
 sealed interface CMDLine {
@@ -104,7 +105,7 @@ class FileTree {
         stack.add(currentDir().findChildren(name))
     }
 
-    fun addFile(file: Output.FileInfo) {
+    fun addFile(file: FileInfo) {
         currentDir().add(File(file.name, file.size))
     }
 
@@ -139,7 +140,7 @@ class FileTree {
                 }
 
                 is Output -> when (cmd) {
-                    is Output.FileInfo -> addFile(cmd)
+                    is FileInfo -> addFile(cmd)
                     is DIR -> addDir(cmd)
                 }
             }
@@ -147,30 +148,30 @@ class FileTree {
     }
 
     fun findDirsSmallerThan(max: Int) = buildList {
-        stack.visitFiles {
-            if (it.isDirectory && it.size < max) add(it)
+        stack.visitDirectories {
+            if (it.size < max) add(it)
         }
     }
 
-    fun findDirToDelete(max: Int, min: Int): File? {
-        val allDirs = buildList {
-            stack.visitFiles {
-                if (it.isDirectory) add(it)
+    fun findDirToDelete(max: Int, min: Int) = buildList {
+        val usedSpace = getRoot().size
+        stack.visitDirectories { file ->
+            if (max - min - usedSpace + file.size > 0) {
+                add(file)
             }
         }
-        val usedSpace = getRoot().size
-        val remainingSpace = max - usedSpace
-        val fromMinToMax = allDirs
-            .map { (remainingSpace + it.size) - min to it }
-            .filter { it.first > 0 }
-            .sortedBy { it.first }
-        return fromMinToMax.firstOrNull()?.second
+    }.minByOrNull { it.size }
+
+    private fun Iterable<File>.visitDirectories(action: (File) -> Unit) {
+        return visit(File::isDirectory, action)
     }
 
-    private fun Iterable<File>.visitFiles(action: (File) -> Unit) {
-        for (file in this@visitFiles) {
-            action(file)
-            file.children.visitFiles(action)
+    private fun Iterable<File>.visit(predicate: (File) -> Boolean = { true }, action: (File) -> Unit) {
+        for (file in this@visit) {
+            if (predicate(file)) {
+                action(file)
+                file.children.visit(predicate, action)
+            }
         }
     }
 }
