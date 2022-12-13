@@ -20,17 +20,23 @@ fun String.md5() =
         .padStart(32, '0')
 
 fun List<String>.sumBySplitting(condition: (String) -> Boolean): List<Int> {
-    val elements = mutableListOf<Int>()
-    return fold(mutableListOf<Int>()) { acc, element ->
+    return splitBy(condition).map { it.sumOf { it.toInt() } }
+}
+
+fun List<String>.splitBy(predicate: (String) -> Boolean): List<List<String>> {
+    val elements = mutableListOf<String>()
+    return fold(mutableListOf<MutableList<String>>()) { acc, string ->
         acc.apply {
-            if (condition(element)) {
-                add(elements.sum())
+            if (predicate(string)) {
+                acc.add(elements.toMutableList())
                 elements.clear()
             } else {
-                elements.add(element.toInt())
+                elements.add(string)
             }
         }
-    } + elements.sum()
+    }.also {
+        if (elements.isNotEmpty()) it.add(elements)
+    }
 }
 
 fun String.hasDuplicates(): Boolean {
