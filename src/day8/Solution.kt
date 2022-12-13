@@ -1,19 +1,22 @@
 package day8
 
+import Coords
+import asCoordsSequence
 import readInput
+import toIntMatrix
 
 fun main() {
 
     fun part1(input: List<String>): Int {
-        val forest = input.toMatrix()
-        return forest.asIndexesSequence()
+        val forest = input.toIntMatrix()
+        return forest.asCoordsSequence()
             .count(forest::isVisible)
     }
 
     fun part2(input: List<String>): Int {
-        val forest = input.toMatrix()
+        val forest = input.toIntMatrix()
         return forest
-            .asIndexesSequence()
+            .asCoordsSequence()
             .maxOf(forest::getScore)
     }
 
@@ -23,7 +26,7 @@ fun main() {
     println(part2(input))
 }
 
-private fun List<List<Int>>.isVisible(coords: Pair<Int, Int>): Boolean {
+private fun List<List<Int>>.isVisible(coords: Coords): Boolean {
     val (r, c) = coords
     if (r == 0 || c == 0 || r == lastIndex || c == this[0].lastIndex) {
         return true
@@ -39,7 +42,7 @@ private fun List<List<Int>>.isVisible(coords: Pair<Int, Int>): Boolean {
     return false
 }
 
-private fun List<List<Int>>.getScore(coords: Pair<Int, Int>): Int {
+private fun List<List<Int>>.getScore(coords: Coords): Int {
     val (r, c) = coords
     val current = this[r][c]
     val openFromBottom = (r + 1..lastIndex).takeWhileInclusive { this[it][c] < current }.size
@@ -61,14 +64,3 @@ inline fun <T> Iterable<T>.takeWhileInclusive(predicate: (T) -> Boolean): List<T
     return list
 }
 
-private fun List<String>.toMatrix(): List<List<Int>> {
-    return map { it.map { it.digitToInt() } }
-}
-
-private fun <T> List<List<T>>.asIndexesSequence() = sequence {
-    for (i in this@asIndexesSequence.indices) {
-        for (j in this@asIndexesSequence[0].indices) {
-            yield(i to j)
-        }
-    }
-}

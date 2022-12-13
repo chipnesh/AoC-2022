@@ -51,3 +51,44 @@ fun String.hasDuplicates(): Boolean {
 }
 
 fun String.noDuplicates() = !hasDuplicates()
+
+fun List<String>.toIntMatrix(): List<List<Int>> {
+    return map { it.map { it.digitToInt() } }
+}
+
+fun <T> List<List<T>>.asCoordsSequence() = sequence {
+    for (i in this@asCoordsSequence.indices) {
+        for (j in this@asCoordsSequence[0].indices) {
+            yield(Coords(i, j))
+        }
+    }
+}
+
+fun List<String>.toCharMatrix(): List<List<Char>> {
+    return map { it.map { it } }
+}
+
+data class Coords(val x: Int = 0, val y: Int = 0)
+
+operator fun <T> List<List<T>>.get(coords: Coords): T {
+    return this[coords.x][coords.y]
+}
+
+fun <T> List<List<T>>.findFirst(toFind: T): Coords {
+    for ((r, rc) in this.withIndex()) {
+        for ((c, cc) in rc.withIndex()) {
+            if (cc == toFind) return Coords(r, c)
+        }
+    }
+    return Coords()
+}
+
+fun <T> List<List<T>>.findAll(toFind: T): List<Coords> {
+    val result = mutableListOf<Coords>()
+    for ((r, rc) in this.withIndex()) {
+        for ((c, cc) in rc.withIndex()) {
+            if (cc == toFind) result += Coords(r, c)
+        }
+    }
+    return result
+}
