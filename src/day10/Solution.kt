@@ -36,7 +36,7 @@ class SignalStrengthSummarizer {
     }
 
     fun getSum(): Int {
-        return strengths.map { it.key * it.value }.sum()
+        return strengths.entries.sumOf { (l, x) -> l.times(x) }
     }
 
     private fun getStrengthLevel(cycle: Int): Int {
@@ -64,14 +64,11 @@ class Crt {
     }
 
     fun printScreen(print: (String) -> Unit) {
-        val screenData = crt.joinToString(System.lineSeparator()) {
-            it.joinToString("") { it.toString() }
-        }
-        print(screenData)
+        print(crt.joinToString(System.lineSeparator()) { it.joinToString("") })
     }
 
     private fun MutableList<MutableList<Char>>.init(line: Int): MutableList<Char> {
-        while (size <= line) {
+        if (size <= line) {
             val lineChars = mutableListOf<Char>()
             add(lineChars)
             return lineChars
@@ -100,7 +97,7 @@ data class Cpu(
     val onCycle: (Int, Int) -> Unit
 ) {
     private val executing: ArrayDeque<Op> = ArrayDeque()
-    val isRunning get() = cycle >= 0
+    private val isRunning get() = cycle >= 0
 
     fun run() {
         while (isRunning) execute()

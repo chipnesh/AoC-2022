@@ -19,10 +19,6 @@ fun String.md5() =
         .toString(16)
         .padStart(32, '0')
 
-fun List<String>.sumBySplitting(condition: (String) -> Boolean): List<Int> {
-    return splitBy(condition).map { it.sumOf { it.toInt() } }
-}
-
 fun List<String>.splitBy(predicate: (String) -> Boolean): List<List<String>> {
     val elements = mutableListOf<String>()
     return fold(mutableListOf<MutableList<String>>()) { acc, string ->
@@ -91,4 +87,16 @@ fun <T> List<List<T>>.findAll(toFind: T): List<Coords> {
         }
     }
     return result
+}
+
+inline fun <T> Iterable<T>.takeWhileInclusive(predicate: (T) -> Boolean): List<T> {
+    val list = ArrayList<T>()
+    for (item in this) {
+        if (!predicate(item)) {
+            list.add(item)
+            break
+        }
+        list.add(item)
+    }
+    return list
 }

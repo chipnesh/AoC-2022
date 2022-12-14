@@ -3,13 +3,15 @@ package day8
 import Coords
 import asCoordsSequence
 import readInput
+import takeWhileInclusive
 import toIntMatrix
 
 fun main() {
 
     fun part1(input: List<String>): Int {
         val forest = input.toIntMatrix()
-        return forest.asCoordsSequence()
+        return forest
+            .asCoordsSequence()
             .count(forest::isVisible)
     }
 
@@ -36,10 +38,7 @@ private fun List<List<Int>>.isVisible(coords: Coords): Boolean {
     val openFromLeft = (r - 1 downTo 0).all { this[it][c] < current }
     val openFromBottom = (c + 1..this[0].lastIndex).all { this[r][it] < current }
     val openFromUp = (c - 1 downTo 0).all { this[r][it] < current }
-    if (openFromRight || openFromLeft || openFromBottom || openFromUp) {
-        return true
-    }
-    return false
+    return openFromRight || openFromLeft || openFromBottom || openFromUp
 }
 
 private fun List<List<Int>>.getScore(coords: Coords): Int {
@@ -51,16 +50,3 @@ private fun List<List<Int>>.getScore(coords: Coords): Int {
     val openFromLeft = (c - 1 downTo 0).takeWhileInclusive { this[r][it] < current }.size
     return openFromBottom * openFromUp * openFromRight * openFromLeft
 }
-
-inline fun <T> Iterable<T>.takeWhileInclusive(predicate: (T) -> Boolean): List<T> {
-    val list = ArrayList<T>()
-    for (item in this) {
-        if (!predicate(item)) {
-            list.add(item)
-            break
-        }
-        list.add(item)
-    }
-    return list
-}
-

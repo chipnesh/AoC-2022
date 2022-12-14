@@ -24,7 +24,7 @@ class Monkeys(
     private val monkeys: List<Monkey>
 ) {
 
-    private val commonDivisor = monkeys.map { it.throwCondition.divisible }.reduce(Int::times)
+    private val commonDivisor = monkeys.map { it.throwCondition.divisor }.reduce(Int::times)
 
     fun start(rounds: Int, divisor: Int): Monkeys {
         repeat(rounds) {
@@ -43,9 +43,7 @@ class Monkeys(
 
     companion object {
         fun ofNotes(notes: List<String>): Monkeys {
-            return Monkeys(
-                notes.splitBy(String::isBlank).map(Monkey::ofNotes)
-            )
+            return Monkeys(notes.splitBy(String::isBlank).map(Monkey::ofNotes))
         }
     }
 }
@@ -53,25 +51,26 @@ class Monkeys(
 data class ItemToThrow(val level: Long, val toMonkey: Int)
 
 data class ThrowCondition(
-    val divisible: Int,
+    val divisor: Int,
     val onTrue: Int,
     val onFalse: Int,
 ) {
     fun chooseMonkeyAndItem(level: Long): ItemToThrow {
-        return if (level.rem(divisible) == 0L) ItemToThrow(level, onTrue) else ItemToThrow(level, onFalse)
+        return if (level.rem(divisor) == 0L) ItemToThrow(level, onTrue)
+        else ItemToThrow(level, onFalse)
     }
 }
 
 data class Monkey(
     val id: Int,
-    val items: ArrayDeque<Long>,
+    val items: MutableList<Long>,
     val inspect: (Long) -> Long,
     val throwCondition: ThrowCondition,
     var inspected: Long = 0
 ) {
     fun takeTurn(monkeys: List<Monkey>, divisor: Int, commonDivisor: Int) {
         fun throwToOther(item: ItemToThrow) =
-            monkeys[item.toMonkey].items.addLast(item.level)
+            monkeys[item.toMonkey].items.add(item.level)
         inspected += items
             .asSequence()
             .map(inspect)

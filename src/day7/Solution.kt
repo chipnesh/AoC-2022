@@ -147,23 +147,8 @@ class FileTree {
         }
     }
 
-    fun findDirsSmallerThan(max: Int) = buildList {
-        stack.visitDirectories {
-            if (it.size < max) add(it)
-        }
-    }
-
-    fun findDirToDelete(max: Int, min: Int) = buildList {
-        val usedSpace = getRoot().size
-        stack.visitDirectories { file ->
-            if (max - min - usedSpace + file.size > 0) {
-                add(file)
-            }
-        }
-    }.minByOrNull { it.size }
-
-    private fun Iterable<File>.visitDirectories(action: (File) -> Unit) {
-        return visit(File::isDirectory, action)
+    fun visitDirectories(action: (File) -> Unit) {
+        return stack.visit(File::isDirectory, action)
     }
 
     private fun Iterable<File>.visit(predicate: (File) -> Boolean = { true }, action: (File) -> Unit) {
@@ -178,11 +163,24 @@ class FileTree {
 
 fun main() {
     fun part1(input: List<String>): Int {
-        return FileTree.fromHistory(input).findDirsSmallerThan(100000).sumOf { it.size }
+        val tree = FileTree.fromHistory(input)
+        return buildList {
+            tree.visitDirectories {
+                if (it.size < 100000) add(it)
+            }
+        }.sumOf { it.size }
     }
 
     fun part2(input: List<String>): Int {
-        return FileTree.fromHistory(input).findDirToDelete(70000000, 30000000)?.size ?: -1
+        val tree = FileTree.fromHistory(input)
+        return buildList {
+            val usedSpace = tree.getRoot().size
+            tree.visitDirectories { file ->
+                if (70000000 - 30000000 - usedSpace + file.size > 0) {
+                    add(file)
+                }
+            }
+        }.minByOrNull { it.size }?.size ?: -1
     }
 
     //val input = readInput("test")

@@ -11,17 +11,17 @@ fun main() {
 
     fun part1(input: List<String>): Int {
         val tail = Pos()
-        return runRopes(input, tail::follow)
+        return walkRopes(input, tail::follow)
     }
 
     fun part2(input: List<String>): Int {
         val tail = List(9) { Pos() }
         fun follow(head: Pos) = tail.fold(head) { lead, follower -> follower.follow(lead) }
-        return runRopes(input, ::follow)
+        return walkRopes(input, ::follow)
     }
 
-    val input = readInput("test")
-    //val input = readInput("prod")
+    //val input = readInput("test")
+    val input = readInput("prod")
     println(part1(input))
     println(part2(input))
 }
@@ -50,7 +50,7 @@ data class Pos(var x: Int = 0, var y: Int = 0) {
     }
 }
 
-fun runRopes(input: List<String>, onHeadMove: (Pos) -> Pos): Int {
+fun walkRopes(input: List<String>, onHeadMove: (Pos) -> Pos): Int {
     val head = Pos()
     val visited = mutableMapOf<Pair<Int, Int>, Boolean>()
     fun visit(pos: Pos) = run { visited[pos.x to pos.y] = true }
@@ -64,20 +64,26 @@ fun runRopes(input: List<String>, onHeadMove: (Pos) -> Pos): Int {
 }
 
 sealed class Step(val times: Int) {
-    fun flatten() =
-        List(times) {
-            when (this) {
-                is Down -> Down()
-                is Left -> Left()
-                is Right -> Right()
-                is Up -> Up()
-            }
-        }
 
-    data class Up(val steps: Int = 1) : Step(steps)
-    data class Down(val steps: Int = 1) : Step(steps)
-    data class Right(val steps: Int = 1) : Step(steps)
-    data class Left(val steps: Int = 1) : Step(steps)
+    fun flatten() = List(times) { singleStep() }
+
+    abstract fun singleStep(): Step
+
+    data class Up(val steps: Int = 1) : Step(steps) {
+        override fun singleStep() = Up()
+    }
+
+    data class Down(val steps: Int = 1) : Step(steps) {
+        override fun singleStep() = Down()
+    }
+
+    data class Right(val steps: Int = 1) : Step(steps) {
+        override fun singleStep() = Right()
+    }
+
+    data class Left(val steps: Int = 1) : Step(steps) {
+        override fun singleStep() = Left()
+    }
 }
 
 fun List<String>.toSteps() = map { direction ->
