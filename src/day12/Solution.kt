@@ -4,6 +4,7 @@ import Coords
 import findAll
 import findFirst
 import get
+import getNeighbours
 import readInput
 import toCharMatrix
 
@@ -42,7 +43,7 @@ data class HeightMap(
             val current = steps.removeFirst()
             val coords = current.coords
             if (coords in destination) return current.distance
-            coords.getNeighbours()
+            coords.getNeighbours(map)
                 .filterNot(visited::contains)
                 .filter { coords.canClimbTo(it) }
                 .onEach(visited::add)
@@ -50,13 +51,6 @@ data class HeightMap(
                 .forEach(steps::add)
         }
         error("oops")
-    }
-
-    private fun Coords.getNeighbours() = buildList {
-        if (x + 1 <= map.lastIndex) add(Coords(x + 1, y))
-        if (y + 1 <= map[0].lastIndex) add(Coords(x, y + 1))
-        if (x - 1 >= 0) add(Coords(x - 1, y))
-        if (y - 1 >= 0) add(Coords(x, y - 1))
     }
 
     fun minStepsFromStart() = distanceTo(start)

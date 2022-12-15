@@ -1,6 +1,8 @@
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
+import kotlin.Int.Companion
+import kotlin.math.absoluteValue
 
 /**
  * Reads lines from the given input txt file.
@@ -100,6 +102,30 @@ fun <T> List<List<T>>.findAll(toFind: T): List<Coords> {
     return result
 }
 
+fun Coords.toBounds(distance: Int): Bounds {
+    return Bounds(x - distance, x + distance, y - distance, y + distance)
+}
+
+data class Bounds(
+    val minX: Int,
+    val maxX: Int,
+    val minY: Int,
+    val maxY: Int,
+)
+
+fun <T> Coords.getNeighbours(matrix: List<List<T>>) = getNeighbours(0, matrix.lastIndex, 0, matrix[0].lastIndex)
+
+fun Coords.getNeighbours(bounds: Bounds) = getNeighbours(bounds.minX, bounds.maxX, bounds.minY, bounds.maxY)
+
+fun Coords.getNeighbours(minX: Int, maxX: Int, minY: Int, maxY: Int): List<Coords> {
+    val neighbours = mutableListOf<Coords>()
+    if (x + 1 <= maxX) neighbours.add(Coords(x + 1, y))
+    if (y + 1 <= maxY) neighbours.add(Coords(x, y + 1))
+    if (x - 1 >= 0) neighbours.add(Coords(x - 1, y))
+    if (y - 1 >= 0) neighbours.add(Coords(x, y - 1))
+    return neighbours
+}
+
 inline fun <T> Iterable<T>.takeWhileInclusive(predicate: (T) -> Boolean): List<T> {
     val list = ArrayList<T>()
     for (item in this) {
@@ -117,3 +143,20 @@ fun List<String>.splitEach(delimiter: String): List<List<String>> {
 }
 
 fun <T, R> List<T>.toPair(mapper: (T) -> R = { it as R }) = mapper(get(0)) to mapper(get(1))
+
+val IntRange.length get() = last.toLong() - first + 1
+
+fun IntRange.intersects(other: IntRange) =
+    first in other || last in other || other.first in this || other.last in this
+
+operator fun IntRange.contains(other: IntRange): Boolean {
+    return other.first in this && other.last in this
+}
+
+operator fun IntRange.times(other: IntRange) =
+    IntRange(minOf(first, other.first), maxOf(last, other.last))
+
+operator fun IntRange.plus(other: IntRange) =
+    other.takeIf(this::intersects)?.let { this * other }
+
+val IntRange.Companion.MAX: IntRange get() = Int.MIN_VALUE..Int.MAX_VALUE
