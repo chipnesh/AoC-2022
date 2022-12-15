@@ -64,11 +64,22 @@ fun List<String>.toCharMatrix(): List<List<Char>> {
     return map { it.map { it } }
 }
 
-data class Coords(val x: Int = 0, val y: Int = 0)
-
-operator fun <T> List<List<T>>.get(coords: Coords): T {
-    return this[coords.x][coords.y]
+data class Coords(val x: Int = 0, val y: Int = 0) {
+    constructor(pair: Pair<Int, Int>) : this(pair.first, pair.second)
 }
+
+fun Coords.above(): Coords = copy(y = y - 1)
+fun Coords.below(): Coords = copy(y = y + 1)
+fun Coords.leftDown(): Coords = copy(x = x - 1, y = y + 1)
+fun Coords.rightDown(): Coords = copy(x = x + 1, y = y + 1)
+
+@JvmName("get")
+operator fun <T> List<List<T>>.get(coords: Coords): T {
+    return this[coords.x][coords.y]!!
+}
+
+@JvmName("getOrNull")
+operator fun <T> MutableList<MutableList<T>>.get(coords: Coords) = getOrNull(coords.x)?.getOrNull(coords.y)
 
 fun <T> List<List<T>>.findFirst(toFind: T): Coords {
     for ((r, rc) in this.withIndex()) {
@@ -100,3 +111,9 @@ inline fun <T> Iterable<T>.takeWhileInclusive(predicate: (T) -> Boolean): List<T
     }
     return list
 }
+
+fun List<String>.splitEach(delimiter: String): List<List<String>> {
+    return map { it.split(delimiter) }
+}
+
+fun <T, R> List<T>.toPair(mapper: (T) -> R = { it as R }) = mapper(get(0)) to mapper(get(1))
