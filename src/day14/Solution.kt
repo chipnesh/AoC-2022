@@ -139,7 +139,7 @@ class PathScanner(
                     val diagonalLeft = getTile(current.leftDown(), mode)
                     val diagonalRight = getTile(current.rightDown(), mode)
                     if (diagonalLeft.isSand() && diagonalRight.isSand()) {
-                        if (sourceCoords.adjust() == belowTile.coords.above()) {
+                        if (sourceCoords.adjust() == current) {
                             finished = true
                         }
                     }

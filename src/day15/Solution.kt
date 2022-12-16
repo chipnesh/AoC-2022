@@ -7,19 +7,9 @@ import MAX
 import length
 import plus
 import readInput
-import toBounds
 import kotlin.math.absoluteValue
 
 fun main() {
-
-    fun part1Naive(input: List<String>): Int {
-        return Sensors.ofInput(input)
-            .coverages()
-            .print()
-            .map { it.coordsWithoutBeaconAt(10) }
-            .reduce(Set<Coords>::union)
-            .size
-    }
 
     fun part1(input: List<String>): Long {
         val sensors = Sensors.ofInput(input)
@@ -51,62 +41,11 @@ fun main() {
     println(part2(input))
 }
 
-private fun List<Coverage>.print(): List<Coverage> {
-    val beacons = mapTo(mutableSetOf()) { it.sensor.beacon }
-    val sensors = mapTo(mutableSetOf()) { it.sensor.coords }
-    val coords = flatMap { it.coords }.toSet() - beacons - sensors
-    val minX = coords.minOf { it.x }
-    val maxX = coords.maxOf { it.x }
-    val minY = coords.minOf { it.y }
-    val maxY = coords.maxOf { it.y }
-
-    var row = minX
-    var col = minY
-    print(" ".padStart(2))
-    for (x in minX..maxX) {
-        print("${row++}".padStart(3))
-    }
-    println()
-    for (y in minY..maxY) {
-        print("${col++}".padStart(3))
-        for (x in minX..maxX) {
-            val c = Coords(x, y)
-            when (c) {
-                in coords -> print(" # ")
-                in sensors -> print(" S ")
-                in beacons -> print(" B ")
-                else -> print(" . ")
-            }
-        }
-        println()
-    }
-    return this
-}
-
 data class Sensor(
     val coords: Coords,
     val beacon: Coords
 ) {
     private val distance = ((beacon.x - coords.x).absoluteValue + (beacon.y - coords.y).absoluteValue)
-
-    fun coverage(): Coverage {
-        val scanned = mutableSetOf<Coords>()
-        val bounds = coords.toBounds(distance)
-        var wide = 0
-        for (x in bounds.minX until coords.x) {
-            for (y in coords.y - wide..coords.y + wide) {
-                scanned.add(Coords(x, y))
-            }
-            wide += 1
-        }
-        for (x in coords.x..bounds.maxX) {
-            for (y in coords.y - wide..coords.y + wide) {
-                scanned.add(Coords(x, y))
-            }
-            wide -= 1
-        }
-        return Coverage(this, scanned)
-    }
 
     fun rangeAt(y: Int, maxRange: IntRange): IntRange? {
         val diff = distance - (y - coords.y).absoluteValue
@@ -141,7 +80,6 @@ data class Sensors(
     fun scanRangesAt(y: Int, maxRange: IntRange = IntRange.MAX) =
         sensors
             .mapNotNull { it.rangeAt(y, maxRange) }
-            .filter { it != maxRange }
             .sortedBy(IntRange::first)
             .fold(mutableSetOf<IntRange>()) { acc, next ->
                 acc.apply {
@@ -156,28 +94,9 @@ data class Sensors(
             .count { it.y == y }
     }
 
-    fun coverages(): List<Coverage> {
-        return sensors.map(Sensor::coverage)
-    }
-
-    fun getXRange() =
-        sensors.sortedBy { it.coords.x }.run { first().coords.x..last().coords.x }
-
-    fun getYRange() =
-        sensors.sortedBy { it.coords.y }.run { first().coords.y..last().coords.y }
-
     companion object {
         fun ofInput(input: List<String>): Sensors {
             return Sensors(input.map(Sensor::ofInput))
         }
-    }
-}
-
-data class Coverage(
-    val sensor: Sensor,
-    val coords: Set<Coords>
-) {
-    fun coordsWithoutBeaconAt(y: Int): Set<Coords> {
-        return (coords - sensor.beacon).filterTo(mutableSetOf()) { it.y == y }
     }
 }
