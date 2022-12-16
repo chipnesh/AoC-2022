@@ -1,9 +1,12 @@
 package day14
 
 import Coords
-import above
 import below
-import day14.PointType.*
+import day14.PointType.ABYSS
+import day14.PointType.AIR
+import day14.PointType.ROCK
+import day14.PointType.SAND
+import day14.PointType.SOURCE
 import get
 import leftDown
 import readInput
@@ -180,18 +183,6 @@ class PathScanner(
     private fun isFloor(coords: Coords) = coords.y >= maxY + 2
 
     private fun isSand(coords: Coords) = floorSand.contains(coords)
-
-    // print to see what is going on
-    private fun print(): String {
-        return buildString {
-            for (y in 0..maxY) {
-                for ((x, tiles) in map.withIndex()) {
-                    append(map[x][y].print())
-                }
-                appendLine()
-            }
-        }
-    }
 
     fun sandCapacity(): Int {
         return sands

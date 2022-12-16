@@ -32,7 +32,7 @@ fun toItem(string: String): ListElement = buildList<ListElement> {
             var drop = 1
             when (token.take(1)) {
                 "[" -> add(ListElement())
-                "]" -> this.removeLast().let { last().value.add(it) }
+                "]" -> removeLast().let { last().value.add(it) }
                 else -> {
                     val number = token.takeWhile(Char::isDigit)
                     drop = number.length
